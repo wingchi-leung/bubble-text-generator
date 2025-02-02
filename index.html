@@ -3,37 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble 字体效果</title>
+  <title>Bubble 字体转换器</title>
   <link rel="stylesheet" href="style.css">
+  <!-- 引入 Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
   <!-- 引入 Paper.js 库 -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
   <!-- 引入 opentype.js 库 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.3/opentype.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Bubble 字体效果</h1>
-    <div class="controls">
-      <div class="control-group">
-        <label for="wordInput">输入单词：</label>
-        <input type="text" id="wordInput" placeholder="请输入单词" value="Bubble">
+  <div class="page-wrapper">
+    <!-- 页眉 -->
+    <header class="header">
+      <h1>Bubble 字体转换器</h1>
+      <p>将你的文字转换为独特的泡泡样式，一键生成个性化效果！</p>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="main-content">
+      <div class="controls-card">
+        <div class="controls">
+          <div class="control-group">
+            <label for="wordInput">输入文字：</label>
+            <input type="text" id="wordInput" placeholder="例如: Bubble" value="Bubble">
+          </div>
+          <div class="control-group">
+            <label for="fontSize">字体大小:</label>
+            <input type="range" id="fontSize" min="30" max="150" value="100">
+            <span id="fontSizeValue">100px</span>
+          </div>
+          <div class="color-group">
+            <div class="control-group">
+              <label for="bgColor">背景颜色:</label>
+              <input type="color" id="bgColor" value="#e0f7fa">
+            </div>
+            <div class="control-group">
+              <label for="textColor">字体颜色:</label>
+              <input type="color" id="textColor" value="#a0d8ef">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="control-group">
-        <label for="fontSize">字体大小：</label>
-        <input type="range" id="fontSize" min="30" max="150" value="100">
-        <span id="fontSizeValue">100px</span>
+      <div class="canvas-container">
+        <!-- canvas 元素：Paper.js 会自动适应尺寸 -->
+        <canvas id="myCanvas" resize></canvas>
       </div>
-      <div class="control-group">
-        <label for="bgColor">背景颜色：</label>
-        <input type="color" id="bgColor" value="#e0f7fa">
-      </div>
-      <div class="control-group">
-        <label for="textColor">字体颜色：</label>
-        <input type="color" id="textColor" value="#a0d8ef">
-      </div>
-    </div>
-    <!-- canvas 元素：Paper.js 会自动适配尺寸 -->
-    <canvas id="myCanvas" resize></canvas>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <p>&copy; 2023 Bubble 字体转换器. All rights reserved.</p>
+    </footer>
   </div>
   <script src="script.js"></script>
 </body>
