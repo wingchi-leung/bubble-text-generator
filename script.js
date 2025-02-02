@@ -52,49 +52,48 @@ function renderText() {
   // 清空 Paper.js 当前内容
   paper.project.clear();
 
-  // 导入 SVG 得到一个图形对象
+  // 导入 SVG 得到一个图形对象，可能是 Group 或者单个 Path
   textItem = paper.project.importSVG(svgString);
-  
-  // 如果导入后得到的是一个 Group，则合并为 CompoundPath 便于后续操作
-  if (textItem.children && textItem.children.length > 0) {
-    textItem = new paper.CompoundPath({
-      children: textItem.children,
-      fillColor: null,
-      strokeColor: null
-    });
-  }
-  
+
   // 将生成的文字图形居中于视图
   let bounds = textItem.bounds;
   let offset = paper.view.center.subtract(bounds.center);
   textItem.position = textItem.position.add(offset);
 
-  // 对路径进行平滑处理，效果更圆润
-  if (textItem.flatten) {
-    textItem.flatten(1);
-    textItem.smooth();
-  } else if (textItem.children) {
-    textItem.children.forEach(child => {
-      child.flatten(1);
-      child.smooth();
-    });
-  }
-
   // 获取用户选择的字体颜色，作为渐变填充的外侧颜色（内侧为白色，模拟反光效果）
   const selectedTextColor = textColorInput.value || "#a0d8ef";
 
-  // 添加渐变填充，模拟气泡内反光效果
-  textItem.fillColor = {
-    gradient: {
-      stops: ['white', selectedTextColor]
-    },
-    origin: textItem.bounds.topLeft,
-    destination: textItem.bounds.bottomRight
-  };
-
-  // 添加描边效果，让文字边缘更清晰
-  textItem.strokeColor = new paper.Color('#6495ED');
-  textItem.strokeWidth = fontSize * 0.05;
+  // 如果导入后得到的是 Group，则针对每个子路径进行处理
+  if (textItem.children && textItem.children.length > 0) {
+    textItem.children.forEach(child => {
+      child.flatten(1);
+      child.smooth();
+      child.fillColor = {
+        gradient: {
+          stops: ['white', selectedTextColor]
+        },
+        origin: child.bounds.topLeft,
+        destination: child.bounds.bottomRight
+      };
+      child.strokeColor = new paper.Color('#6495ED');
+      child.strokeWidth = fontSize * 0.05;
+    });
+  } else {
+    // 单个路径的情况
+    if (textItem.flatten) {
+      textItem.flatten(1);
+      textItem.smooth();
+    }
+    textItem.fillColor = {
+      gradient: {
+        stops: ['white', selectedTextColor]
+      },
+      origin: textItem.bounds.topLeft,
+      destination: textItem.bounds.bottomRight
+    };
+    textItem.strokeColor = new paper.Color('#6495ED');
+    textItem.strokeWidth = fontSize * 0.05;
+  }
 
   paper.view.draw();
 }
@@ -115,13 +114,25 @@ bgColorInput.addEventListener('input', function() {
 textColorInput.addEventListener('input', function() {
   const selectedTextColor = this.value || "#a0d8ef";
   if (textItem) {
-    textItem.fillColor = {
-      gradient: {
-        stops: ['white', selectedTextColor]
-      },
-      origin: textItem.bounds.topLeft,
-      destination: textItem.bounds.bottomRight
-    };
+    if (textItem.children && textItem.children.length > 0) {
+      textItem.children.forEach(child => {
+        child.fillColor = {
+          gradient: {
+            stops: ['white', selectedTextColor]
+          },
+          origin: child.bounds.topLeft,
+          destination: child.bounds.bottomRight
+        };
+      });
+    } else {
+      textItem.fillColor = {
+        gradient: {
+          stops: ['white', selectedTextColor]
+        },
+        origin: textItem.bounds.topLeft,
+        destination: textItem.bounds.bottomRight
+      };
+    }
     paper.view.draw();
   }
 });
