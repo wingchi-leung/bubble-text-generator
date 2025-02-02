@@ -39,7 +39,7 @@ function renderText() {
     textItem.remove();
   }
   
-  const word = wordInput.value.trim() || 'Bubble';
+  const word = wordInput.value.trim() || 'Bubble Text';
   const fontSize = parseInt(fontSizeInput.value, 10);
 
   // 使用 opentype.js 获取文字路径（基于 (0,0) 坐标，后续调整居中显示）
@@ -61,29 +61,22 @@ function renderText() {
   textItem.position = textItem.position.add(offset);
 
   // 获取用户选定的字体颜色，直接作为纯色填充（取消反光渐变效果）
-  const selectedTextColor = textColorInput.value || "#a0d8ef";
+  const selectedTextColor = textColorInput.value || "#213B45";
 
   if (textItem.children && textItem.children.length > 0) {
-    console.log("大于0 ")
     textItem.children.forEach(child => {
       // 对路径进行基本处理，保持细节（如需要可保留 flatten 与 smooth）
       child.flatten(1);
       child.smooth();
       // 直接设置纯色填充
       child.fillColor = new paper.Color(selectedTextColor);
-      child.strokeColor = new paper.Color('#6495ED');
-      child.strokeWidth = fontSize * 0.05;
     });
   } else {
-    console.log("小于0 ")
-
     if (textItem.flatten) {
       textItem.flatten(1);
       textItem.smooth();
     }
     textItem.fillColor = new paper.Color(selectedTextColor);
-    textItem.strokeColor = new paper.Color('#6495ED');
-    textItem.strokeWidth = fontSize * 0.05;
   }
 
   paper.view.draw();
@@ -104,7 +97,7 @@ bgColorInput.addEventListener('input', function() {
 
 // 字体颜色实时更新，仅修改已存在文本的填充颜色为纯色效果
 textColorInput.addEventListener('input', function() {
-  const selectedTextColor = this.value || "#a0d8ef";
+  const selectedTextColor = this.value || "#509fbe";
   if (textItem) {
     if (textItem.children && textItem.children.length > 0) {
       textItem.children.forEach(child => {
