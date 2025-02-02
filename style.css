@@ -72,22 +72,45 @@ body {
   font-weight: 700;
 }
 
-input[type="text"],
-input[type="color"] {
+input[type="text"] {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  flex-grow: 1;
 }
 
 input[type="range"] {
   width: 100%;
 }
 
+/* 优化背景颜色和字体颜色的输入框 */
 .color-group {
   display: flex;
-  gap: 15px;
-  flex: 1;
-  min-width: 220px;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.color-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.color-control label {
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-size: 0.95em;
+}
+
+.color-control input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* canvas 容器 */
@@ -118,8 +141,8 @@ canvas {
     flex-direction: column;
     align-items: flex-start;
   }
-
   .color-group {
     flex-direction: column;
+    align-items: center;
   }
 } 

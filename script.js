@@ -5,7 +5,7 @@ let loadedFont = null;
 let textItem = null;
 
 // 设置字体文件路径，你需要将字体文件放在此路径下
-const fontPath = 'assets/fonts/Roboto-Regular.ttf';
+const fontPath = 'assets/fonts/BubbleBobble-rg3rx.ttf';
 
 // 初始化 Paper.js，使用 id 为 myCanvas 的 canvas 元素
 paper.setup('myCanvas');
