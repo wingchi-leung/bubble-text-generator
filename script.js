@@ -4,7 +4,7 @@
 let loadedFont = null;
 let textItem = null;
 
-// 设置字体文件路径，你需要将字体文件放在此路径下
+// 设置字体文件路径，这里使用预置的泡泡字体
 const fontPath = 'assets/fonts/BubbleBobble-rg3rx.ttf';
 
 // 初始化 Paper.js，使用 id 为 myCanvas 的 canvas 元素
@@ -42,17 +42,17 @@ function renderText() {
   const word = wordInput.value.trim() || 'Bubble';
   const fontSize = parseInt(fontSizeInput.value, 10);
 
-  // 使用 opentype.js 获取文字的路径（x:0, y:0 为基线，后续调整居中显示）
+  // 使用 opentype.js 获取文字路径（基于 (0,0) 坐标，后续调整居中显示）
   const path = loadedFont.getPath(word, 0, 0, fontSize);
   const pathData = path.toPathData();
 
-  // 构建 SVG 字符串，并通过 Paper.js 导入路径
+  // 构建 SVG 字符串，并通过 Paper.js 导入该路径
   const svgString = '<svg xmlns="http://www.w3.org/2000/svg"><path d="' + pathData + '"/></svg>';
 
   // 清空 Paper.js 当前内容
   paper.project.clear();
 
-  // 导入 SVG 得到一个图形对象，可能是 Group 或者单个 Path
+  // 导入 SVG 得到的图形对象，可以是 Group 或单个 Path
   textItem = paper.project.importSVG(svgString);
 
   // 将生成的文字图形居中于视图
@@ -60,37 +60,28 @@ function renderText() {
   let offset = paper.view.center.subtract(bounds.center);
   textItem.position = textItem.position.add(offset);
 
-  // 获取用户选择的字体颜色，作为渐变填充的外侧颜色（内侧为白色，模拟反光效果）
+  // 获取用户选定的字体颜色，直接作为纯色填充（取消反光渐变效果）
   const selectedTextColor = textColorInput.value || "#a0d8ef";
 
-  // 如果导入后得到的是 Group，则针对每个子路径进行处理
   if (textItem.children && textItem.children.length > 0) {
+    console.log("大于0 ")
     textItem.children.forEach(child => {
+      // 对路径进行基本处理，保持细节（如需要可保留 flatten 与 smooth）
       child.flatten(1);
       child.smooth();
-      child.fillColor = {
-        gradient: {
-          stops: ['white', selectedTextColor]
-        },
-        origin: child.bounds.topLeft,
-        destination: child.bounds.bottomRight
-      };
+      // 直接设置纯色填充
+      child.fillColor = new paper.Color(selectedTextColor);
       child.strokeColor = new paper.Color('#6495ED');
       child.strokeWidth = fontSize * 0.05;
     });
   } else {
-    // 单个路径的情况
+    console.log("小于0 ")
+
     if (textItem.flatten) {
       textItem.flatten(1);
       textItem.smooth();
     }
-    textItem.fillColor = {
-      gradient: {
-        stops: ['white', selectedTextColor]
-      },
-      origin: textItem.bounds.topLeft,
-      destination: textItem.bounds.bottomRight
-    };
+    textItem.fillColor = new paper.Color(selectedTextColor);
     textItem.strokeColor = new paper.Color('#6495ED');
     textItem.strokeWidth = fontSize * 0.05;
   }
@@ -98,46 +89,35 @@ function renderText() {
   paper.view.draw();
 }
 
-// 为控件绑定事件，实现动态更新效果
+// 为控件绑定事件，实现实时更新效果
 wordInput.addEventListener('input', renderText);
 fontSizeInput.addEventListener('input', function() {
   fontSizeValue.textContent = this.value + 'px';
   renderText();
 });
 
-// 当背景颜色发生变化时实时更新 canvas 背景
+// 背景颜色实时更新：同时更新 canvas 原生元素及 Paper.js 使用的 canvas 背景色
 bgColorInput.addEventListener('input', function() {
   canvasEl.style.backgroundColor = this.value;
+  paper.view.element.style.backgroundColor = this.value;
 });
 
-// 当字体颜色动态变化时，仅更新当前文本的填充颜色使之实时响应
+// 字体颜色实时更新，仅修改已存在文本的填充颜色为纯色效果
 textColorInput.addEventListener('input', function() {
   const selectedTextColor = this.value || "#a0d8ef";
   if (textItem) {
     if (textItem.children && textItem.children.length > 0) {
       textItem.children.forEach(child => {
-        child.fillColor = {
-          gradient: {
-            stops: ['white', selectedTextColor]
-          },
-          origin: child.bounds.topLeft,
-          destination: child.bounds.bottomRight
-        };
+        child.fillColor = new paper.Color(selectedTextColor);
       });
     } else {
-      textItem.fillColor = {
-        gradient: {
-          stops: ['white', selectedTextColor]
-        },
-        origin: textItem.bounds.topLeft,
-        destination: textItem.bounds.bottomRight
-      };
+      textItem.fillColor = new paper.Color(selectedTextColor);
     }
     paper.view.draw();
   }
 });
 
-// 当窗口尺寸变化时，重新渲染以保持居中显示
+// 当窗口尺寸发生变化时，重新渲染以保持图形居中显示
 paper.view.onResize = function() {
   renderText();
 }; 
