@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bubble 字体效果</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- 引入 Paper.js 库 -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
+  <!-- 引入 opentype.js 库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.3/opentype.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Bubble 字体效果</h1>
+    <div class="controls">
+      <div class="control-group">
+        <label for="wordInput">输入单词：</label>
+        <input type="text" id="wordInput" placeholder="请输入单词" value="Bubble">
+      </div>
+      <div class="control-group">
+        <label for="fontSize">字体大小：</label>
+        <input type="range" id="fontSize" min="30" max="150" value="100">
+        <span id="fontSizeValue">100px</span>
+      </div>
+      <div class="control-group">
+        <label for="bgColor">背景颜色：</label>
+        <input type="color" id="bgColor" value="#e0f7fa">
+      </div>
+      <div class="control-group">
+        <label for="textColor">字体颜色：</label>
+        <input type="color" id="textColor" value="#a0d8ef">
+      </div>
+    </div>
+    <!-- canvas 元素：Paper.js 会自动适配尺寸 -->
+    <canvas id="myCanvas" resize></canvas>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
