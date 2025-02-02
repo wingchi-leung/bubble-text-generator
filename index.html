@@ -26,11 +26,11 @@
         <div class="controls">
           <div class="control-group">
             <label for="wordInput">输入文字：</label>
-            <input type="text" id="wordInput" placeholder="例如: Bubble" value="Bubble">
+            <input type="text" id="wordInput" placeholder="例如: Bubble" value="Bubble Text">
           </div>
           <div class="control-group">
             <label for="fontSize">字体大小:</label>
-            <input type="range" id="fontSize" min="30" max="200" value="150">
+            <input type="range" id="fontSize" min="30" max="150" value="100">
             <span id="fontSizeValue">100px</span>
           </div>
           <div class="color-group">
@@ -42,6 +42,12 @@
               <label for="textColor">字体颜色</label>
               <input type="color" id="textColor" value="#213B45">
             </div>
+          </div>
+          <!-- 下载按钮区域 -->
+          <div class="download-group">
+            <button id="downloadPNG">下载 PNG</button>
+            <button id="downloadJPG">下载 JPG</button>
+            <button id="downloadSVG">下载 SVG</button>
           </div>
         </div>
       </div>

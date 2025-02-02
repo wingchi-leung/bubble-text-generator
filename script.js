@@ -33,12 +33,20 @@ function renderText() {
   if (!loadedFont) {
     return;
   }
-
-  // 移除之前生成的文字图形
-  if (textItem) {
-    textItem.remove();
-  }
   
+  // 移除之前生成的内容，包括文本及背景
+  paper.project.clear();
+  
+  // 添加背景矩形，覆盖整个画布（Paper.js 的视图区域）
+  const bgColor = bgColorInput.value || "#e0f7fa";
+  const backgroundRect = new paper.Path.Rectangle({
+    point: [0, 0],
+    size: paper.view.size,
+    fillColor: new paper.Color(bgColor)
+  });
+  backgroundRect.sendToBack();
+  
+  // 获取用户输入文字和字体大小
   const word = wordInput.value.trim() || 'Bubble Text';
   const fontSize = parseInt(fontSizeInput.value, 10);
 
@@ -48,9 +56,6 @@ function renderText() {
 
   // 构建 SVG 字符串，并通过 Paper.js 导入该路径
   const svgString = '<svg xmlns="http://www.w3.org/2000/svg"><path d="' + pathData + '"/></svg>';
-
-  // 清空 Paper.js 当前内容
-  paper.project.clear();
 
   // 导入 SVG 得到的图形对象，可以是 Group 或单个 Path
   textItem = paper.project.importSVG(svgString);
@@ -65,10 +70,9 @@ function renderText() {
 
   if (textItem.children && textItem.children.length > 0) {
     textItem.children.forEach(child => {
-      // 对路径进行基本处理，保持细节（如需要可保留 flatten 与 smooth）
+      // 对路径进行基本处理，保持细节（可根据需要保留 flatten 与 smooth）
       child.flatten(1);
       child.smooth();
-      // 直接设置纯色填充
       child.fillColor = new paper.Color(selectedTextColor);
     });
   } else {
@@ -89,15 +93,16 @@ fontSizeInput.addEventListener('input', function() {
   renderText();
 });
 
-// 背景颜色实时更新：同时更新 canvas 原生元素及 Paper.js 使用的 canvas 背景色
+// 背景颜色实时更新：更新 canvas 样式并调用 renderText() 以更新项目中的背景矩形
 bgColorInput.addEventListener('input', function() {
   canvasEl.style.backgroundColor = this.value;
   paper.view.element.style.backgroundColor = this.value;
+  renderText();
 });
 
 // 字体颜色实时更新，仅修改已存在文本的填充颜色为纯色效果
 textColorInput.addEventListener('input', function() {
-  const selectedTextColor = this.value || "#509fbe";
+  const selectedTextColor = this.value || "#213B45";
   if (textItem) {
     if (textItem.children && textItem.children.length > 0) {
       textItem.children.forEach(child => {
@@ -108,6 +113,40 @@ textColorInput.addEventListener('input', function() {
     }
     paper.view.draw();
   }
+});
+
+// 下载按钮事件处理
+document.getElementById('downloadPNG').addEventListener('click', function() {
+  const dataURL = canvasEl.toDataURL("image/png");
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = "bubble_text.png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+document.getElementById('downloadJPG').addEventListener('click', function() {
+  const dataURL = canvasEl.toDataURL("image/jpeg");
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = "bubble_text.jpg";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+document.getElementById('downloadSVG').addEventListener('click', function() {
+  const svgContent = paper.project.exportSVG({ asString: true });
+  const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = "bubble_text.svg";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 });
 
 // 当窗口尺寸发生变化时，重新渲染以保持图形居中显示
