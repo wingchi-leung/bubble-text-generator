@@ -1,6 +1,7 @@
 # Bubble Text Generator
 
 A web-based tool to transform your text into fun, bubble-style graphics for social media, logos, and more. This project uses modern web technologies along with powerful JavaScript libraries to provide a real-time preview and multiple download options.
+![image](https://github.com/user-attachments/assets/609b3aa2-9337-45dd-b860-ba3a67032259)
 
 ### Installation
 
