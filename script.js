@@ -38,7 +38,7 @@ function renderText() {
   paper.project.clear();
   
   // Create a background rectangle covering the entire view so that exports include background color
-  const bgColor = bgColorInput.value || "#e0f7fa";
+  const bgColor = bgColorInput.value || "#76afb7";
   const backgroundRect = new paper.Path.Rectangle({
     point: [0, 0],
     size: paper.view.size,

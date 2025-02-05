@@ -22,7 +22,6 @@ body {
 /* Header */
 .header {
   background: #6495ED;
-  padding: 20px 0;
   color: #fff;
 }
 .header .container {
@@ -146,7 +145,7 @@ input[type="range"] {
   transition: background 0.3s;
 }
 .download-group button:hover {
-  background: #5072C4;
+  background: #f36f3f;
 }
 
 /* Canvas Container */
@@ -247,7 +246,7 @@ footer.footer {
   background: #6495ED;
   color: #fff;
   text-align: center;
-  padding: 20px 0;
+  
 }
 footer.footer p {
   font-weight: 600;
