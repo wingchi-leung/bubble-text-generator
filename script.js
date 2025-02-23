@@ -62,6 +62,76 @@ function initializeApp() {
 
     // 设置初始背景色
     paper.view.element.style.backgroundColor = document.getElementById('bgColor').value;
+
+    // 背景图片处理
+    let backgroundImage = null;
+    const bgImageInput = document.getElementById('bgImage');
+    const removeBgImageBtn = document.getElementById('removeBgImage');
+
+    bgImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // 创建图片对象
+                const img = new Image();
+                img.onload = function() {
+                    // 移除旧的背景图片（如果存在）
+                    if (backgroundImage) {
+                        backgroundImage.remove();
+                    }
+
+                    // 创建新的背景图片
+                    backgroundImage = new paper.Raster(img);
+                    backgroundImage.position = paper.view.center;
+
+                    // 调整图片大小以填充画布
+                    const scale = Math.max(
+                        paper.view.viewSize.width / img.width,
+                        paper.view.viewSize.height / img.height
+                    );
+                    backgroundImage.scale(scale);
+
+                    // 将背景图片移到最底层
+                    backgroundImage.sendToBack();
+
+                    // 显示移除按钮
+                    removeBgImageBtn.style.display = 'block';
+
+                    // 重新渲染文本以确保它在图片上方
+                    renderText();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 移除背景图片
+    removeBgImageBtn.addEventListener('click', function() {
+        if (backgroundImage) {
+            backgroundImage.remove();
+            backgroundImage = null;
+            bgImageInput.value = ''; // 清除文件输入
+            removeBgImageBtn.style.display = 'none';
+            // 恢复背景颜色
+            paper.view.element.style.backgroundColor = document.getElementById('bgColor').value;
+        }
+    });
+
+    // 修改renderText函数以保持背景图片
+    const originalRenderText = renderText;
+    renderText = function() {
+        // 保存背景图片引用
+        const tempBg = backgroundImage;
+        // 执行原始渲染
+        originalRenderText();
+        // 如果有背景图片，确保它在最底层
+        if (tempBg) {
+            backgroundImage = tempBg;
+            backgroundImage.sendToBack();
+        }
+    };
 }
 
 function renderText() {
@@ -198,5 +268,4 @@ window.onload = function() {
         });
     });
 
-    // ... existing event listeners ...
 }; 

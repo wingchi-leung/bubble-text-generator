@@ -392,4 +392,48 @@ footer.footer p {
     font-size: 0.8rem;
     color: #666;
     margin-top: 0.2rem;
+}
+
+/* 背景图片上传控件样式 */
+.background-control {
+    margin-top: 1.5rem;
+}
+
+.background-control label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.upload-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-btn, .remove-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.upload-btn:hover, .remove-btn:hover {
+    background: #f5f5f5;
+}
+
+.remove-btn {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.remove-btn:hover {
+    background: #fff5f5;
 } 
