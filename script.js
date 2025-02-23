@@ -132,6 +132,115 @@ function initializeApp() {
             backgroundImage.sendToBack();
         }
     };
+
+    // 修改下载按钮处理逻辑
+    document.getElementById('downloadPNG').addEventListener('click', function() {
+        // 创建一个临时canvas来处理导出
+        const tempCanvas = document.createElement('canvas');
+        const width = paper.view.viewSize.width;
+        const height = paper.view.viewSize.height;
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const tempCtx = tempCanvas.getContext('2d');
+
+        // 1. 绘制背景色
+        tempCtx.fillStyle = paper.view.element.style.backgroundColor;
+        tempCtx.fillRect(0, 0, width, height);
+
+        // 2. 如果有背景图片，先绘制背景图片
+        if (backgroundImage) {
+            const raster = backgroundImage.rasterize();
+            tempCtx.drawImage(raster.canvas, 0, 0, width, height);
+        }
+
+        // 3. 绘制原始canvas内容（确保居中）
+        const originalCanvas = document.getElementById('myCanvas');
+        tempCtx.drawImage(originalCanvas, 0, 0, width, height);
+
+        // 创建下载链接
+        const dataURL = tempCanvas.toDataURL('image/png');
+        downloadImage(dataURL, 'bubble_text.png');
+
+        // 清理临时canvas
+        tempCanvas.remove();
+    });
+
+    document.getElementById('downloadJPG').addEventListener('click', function() {
+        // 创建一个临时canvas来处理导出
+        const tempCanvas = document.createElement('canvas');
+        const width = paper.view.viewSize.width;
+        const height = paper.view.viewSize.height;
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const tempCtx = tempCanvas.getContext('2d');
+
+        // 1. 绘制背景色
+        tempCtx.fillStyle = paper.view.element.style.backgroundColor;
+        tempCtx.fillRect(0, 0, width, height);
+
+        // 2. 如果有背景图片，先绘制背景图片
+        if (backgroundImage) {
+            const raster = backgroundImage.rasterize();
+            tempCtx.drawImage(raster.canvas, 0, 0, width, height);
+        }
+
+        // 3. 绘制原始canvas内容（确保居中）
+        const originalCanvas = document.getElementById('myCanvas');
+        tempCtx.drawImage(originalCanvas, 0, 0, width, height);
+
+        // 创建下载链接
+        const dataURL = tempCanvas.toDataURL('image/jpeg', 0.9);
+        downloadImage(dataURL, 'bubble_text.jpg');
+
+        // 清理临时canvas
+        tempCanvas.remove();
+    });
+
+    document.getElementById('downloadSVG').addEventListener('click', function() {
+        // 保存当前项目状态
+        const currentProject = paper.project.exportJSON();
+        
+        // 创建背景矩形
+        const background = new paper.Path.Rectangle({
+            rectangle: paper.view.bounds,
+            fillColor: paper.view.element.style.backgroundColor
+        });
+        
+        // 确保背景在最底层
+        background.sendToBack();
+        
+        // 如果有背景图片，也需要包含
+        if (backgroundImage) {
+            backgroundImage.sendToBack();
+        }
+        
+        // 导出SVG
+        const svg = paper.project.exportSVG({
+            asString: true,
+            bounds: paper.view.bounds,
+            matrix: new paper.Matrix().translate(0, 0)
+        });
+        
+        // 恢复项目状态
+        paper.project.clear();
+        paper.project.importJSON(currentProject);
+        
+        // 创建下载链接
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        downloadImage(url, 'bubble_text.svg');
+        URL.revokeObjectURL(url);
+    });
+
+    // 辅助函数：处理文件下载
+    function downloadImage(url, filename) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
 
 function renderText() {
@@ -194,6 +303,11 @@ function renderText() {
         textPath.fillColor = textColor;
         text.addChild(textPath);
     });
+
+    // 确保文字组居中
+    if (text) {
+        text.position = paper.view.center;
+    }
 
     paper.view.draw();
 }
