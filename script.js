@@ -313,40 +313,40 @@ function renderText() {
 }
 
 // Download button: export as PNG
-document.getElementById('downloadPNG').addEventListener('click', function() {
-  const dataURL = canvasEl.toDataURL("image/png");
-  const link = document.createElement('a');
-  link.href = dataURL;
-  link.download = "bubble_text.png";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
+// document.getElementById('downloadPNG').addEventListener('click', function() {
+//   const dataURL = canvasEl.toDataURL("image/png");
+//   const link = document.createElement('a');
+//   link.href = dataURL;
+//   link.download = "bubble_text.png";
+//   document.body.appendChild(link);
+//   link.click();
+//   document.body.removeChild(link);
+// });
 
 // Download button: export as JPG
-document.getElementById('downloadJPG').addEventListener('click', function() {
-  const dataURL = canvasEl.toDataURL("image/jpeg");
-  const link = document.createElement('a');
-  link.href = dataURL;
-  link.download = "bubble_text.jpg";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
+// document.getElementById('downloadJPG').addEventListener('click', function() {
+//   const dataURL = canvasEl.toDataURL("image/jpeg");
+//   const link = document.createElement('a');
+//   link.href = dataURL;
+//   link.download = "bubble_text.jpg";
+//   document.body.appendChild(link);
+//   link.click();
+//   document.body.removeChild(link);
+// });
 
 // Download button: export as SVG
-document.getElementById('downloadSVG').addEventListener('click', function() {
-  const svgContent = paper.project.exportSVG({ asString: true });
-  const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-  const url  = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = "bubble_text.svg";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-});
+// document.getElementById('downloadSVG').addEventListener('click', function() {
+//   const svgContent = paper.project.exportSVG({ asString: true });
+//   const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+//   const url  = URL.createObjectURL(blob);
+//   const link = document.createElement('a');
+//   link.href = url;
+//   link.download = "bubble_text.svg";
+//   document.body.appendChild(link);
+//   link.click();
+//   document.body.removeChild(link);
+//   URL.revokeObjectURL(url);
+// });
 
 // When window is resized, re-render to keep content centered
 paper.view.onResize = function() {
