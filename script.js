@@ -5,16 +5,8 @@ let loadedFont = null;
 let text = null;
 const fontPath = 'assets/fonts/BubbleBobble-rg3rx.ttf';
 
-// Initialize Paper.js on the canvas with ID "myCanvas"
-paper.setup('myCanvas');
-
-// Get DOM elements
-const wordInput = document.getElementById('wordInput');
-const fontSizeInput = document.getElementById('fontSize');
-const fontSizeValue = document.getElementById('fontSizeValue');
-const bgColorInput = document.getElementById('bgColor');
-const textColorInput = document.getElementById('textColor');
-const canvasEl = document.getElementById('myCanvas');
+// Initialize Paper.js
+paper.install(window);
 
 // Load the font using opentype.js
 opentype.load(fontPath, function(err, font) {
@@ -22,11 +14,56 @@ opentype.load(fontPath, function(err, font) {
         console.error('Font failed to load:', err);
     } else {
         loadedFont = font;
-        renderText();
+        // 字体加载完成后初始化
+        initializeApp();
     }
 });
 
-// Function to render the text as vector paths into Paper.js
+// 将所有初始化逻辑移到这个函数中
+function initializeApp() {
+    paper.setup('myCanvas');
+    
+    // 立即进行第一次渲染
+    renderText();
+
+    // 添加所有事件监听器
+    document.getElementById('wordInput').addEventListener('input', renderText);
+    
+    document.getElementById('fontSize').addEventListener('input', function(e) {
+        document.getElementById('fontSizeValue').textContent = this.value + 'px';
+        renderText();
+    });
+
+    document.getElementById('textColor').addEventListener('input', renderText);
+
+    document.getElementById('bgColor').addEventListener('input', function(e) {
+        paper.view.element.style.backgroundColor = e.target.value;
+    });
+
+    // 颜色预设功能
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bgColor = this.dataset.bg;
+            const textColor = this.dataset.text;
+            
+            document.getElementById('bgColor').value = bgColor;
+            document.getElementById('textColor').value = textColor;
+            
+            paper.view.element.style.backgroundColor = bgColor;
+            if (text) {
+                text.children.forEach(child => {
+                    child.fillColor = textColor;
+                });
+            }
+            
+            renderText();
+        });
+    });
+
+    // 设置初始背景色
+    paper.view.element.style.backgroundColor = document.getElementById('bgColor').value;
+}
+
 function renderText() {
     if (!loadedFont) return;
 
@@ -90,23 +127,6 @@ function renderText() {
 
     paper.view.draw();
 }
-
-// Bind controls for real-time updates
-wordInput.addEventListener('input', renderText);
-fontSizeInput.addEventListener('input', function() {
-  fontSizeValue.textContent = this.value + 'px';
-  renderText();
-});
-
-// Update background color (both canvas element style and Paper.js project)
-bgColorInput.addEventListener('input', function() {
-  canvasEl.style.backgroundColor = this.value;
-  paper.view.element.style.backgroundColor = this.value;
-  renderText();
-});
-
-// Update text color in the rendered text
-textColorInput.addEventListener('input', renderText);
 
 // Download button: export as PNG
 document.getElementById('downloadPNG').addEventListener('click', function() {
