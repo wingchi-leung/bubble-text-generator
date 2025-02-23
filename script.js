@@ -1,10 +1,8 @@
 // script.js: Bubble Text Generator Main Logic
 
-// Global variables to hold the loaded font and the current text item
+// Global variables
 let loadedFont = null;
-let textItem = null;
-
-// Font file path – using a preset bubble font
+let text = null;
 const fontPath = 'assets/fonts/BubbleBobble-rg3rx.ttf';
 
 // Initialize Paper.js on the canvas with ID "myCanvas"
@@ -20,66 +18,77 @@ const canvasEl = document.getElementById('myCanvas');
 
 // Load the font using opentype.js
 opentype.load(fontPath, function(err, font) {
-  if (err) {
-    console.error('Font failed to load: ' + err);
-  } else {
-    loadedFont = font;
-    renderText();
-  }
+    if (err) {
+        console.error('Font failed to load:', err);
+    } else {
+        loadedFont = font;
+        renderText();
+    }
 });
 
 // Function to render the text as vector paths into Paper.js
 function renderText() {
-  if (!loadedFont) {
-    return;
-  }
-  
-  // Clear the current Paper.js project (both text and background)
-  paper.project.clear();
-  
-  // Create a background rectangle covering the entire view so that exports include background color
-  const bgColor = bgColorInput.value || "#76afb7";
-  const backgroundRect = new paper.Path.Rectangle({
-    point: [0, 0],
-    size: paper.view.size,
-    fillColor: new paper.Color(bgColor)
-  });
-  backgroundRect.sendToBack();
-  
-  // Get user input text and font size
-  const word = wordInput.value.trim() || 'Bubble Text';
-  const fontSize = parseInt(fontSizeInput.value, 10);
+    if (!loadedFont) return;
 
-  // Use opentype.js to obtain the path (origin at 0,0; adjustment for centering follows)
-  const path = loadedFont.getPath(word, 0, 0, fontSize);
-  const pathData = path.toPathData();
+    // Clear the current Paper.js project
+    paper.project.activeLayer.removeChildren();
 
-  // Build an SVG string and import it into Paper.js
-  const svgString = '<svg xmlns="http://www.w3.org/2000/svg"><path d="' + pathData + '"/></svg>';
-  textItem = paper.project.importSVG(svgString);
+    // Get user input and settings
+    const word = document.getElementById('wordInput').value.trim() || 'Bubble Text';
+    const fontSize = parseInt(document.getElementById('fontSize').value);
+    const textColor = document.getElementById('textColor').value;
 
-  // Center the generated text
-  let bounds = textItem.bounds;
-  let offset = paper.view.center.subtract(bounds.center);
-  textItem.position = textItem.position.add(offset);
+    // Calculate maximum width for text wrapping
+    const maxLineWidth = paper.view.viewSize.width * 0.8;
 
-  // Set the fill color to the user-selected text color (without any gradient/stroke)
-  const selectedTextColor = textColorInput.value || "#213B45";
-  if (textItem.children && textItem.children.length > 0) {
-    textItem.children.forEach(child => {
-      child.flatten(1);
-      child.smooth();
-      child.fillColor = new paper.Color(selectedTextColor);
+    // Split text into words and create lines
+    const words = word.split(' ');
+    let lines = [];
+    let currentLine = '';
+    let currentLineWidth = 0;
+
+    words.forEach(word => {
+        const wordPath = loadedFont.getPath(word + ' ', 0, 0, fontSize);
+        const wordWidth = wordPath.getBoundingBox().x2 - wordPath.getBoundingBox().x1;
+
+        if (currentLineWidth + wordWidth > maxLineWidth && currentLine !== '') {
+            lines.push(currentLine.trim());
+            currentLine = word + ' ';
+            currentLineWidth = wordWidth;
+        } else {
+            currentLine += word + ' ';
+            currentLineWidth += wordWidth;
+        }
     });
-  } else {
-    if (textItem.flatten) {
-      textItem.flatten(1);
-      textItem.smooth();
+    if (currentLine) {
+        lines.push(currentLine.trim());
     }
-    textItem.fillColor = new paper.Color(selectedTextColor);
-  }
 
-  paper.view.draw();
+    // Create text group
+    text = new paper.Group();
+
+    // Render each line
+    lines.forEach((line, index) => {
+        const path = loadedFont.getPath(line, 0, 0, fontSize);
+        const pathData = path.toPathData();
+        
+        // Create SVG path
+        const svgString = '<svg><path d="' + pathData + '"/></svg>';
+        const textPath = paper.project.importSVG(svgString);
+
+        // Center the line
+        const bounds = textPath.bounds;
+        textPath.position = new paper.Point(
+            paper.view.center.x,
+            paper.view.center.y + (index - lines.length/2) * fontSize * 1.2
+        );
+
+        // Apply color
+        textPath.fillColor = textColor;
+        text.addChild(textPath);
+    });
+
+    paper.view.draw();
 }
 
 // Bind controls for real-time updates
@@ -97,19 +106,7 @@ bgColorInput.addEventListener('input', function() {
 });
 
 // Update text color in the rendered text
-textColorInput.addEventListener('input', function() {
-  const selectedTextColor = this.value || "#213B45";
-  if (textItem) {
-    if (textItem.children && textItem.children.length > 0) {
-      textItem.children.forEach(child => {
-        child.fillColor = new paper.Color(selectedTextColor);
-      });
-    } else {
-      textItem.fillColor = new paper.Color(selectedTextColor);
-    }
-    paper.view.draw();
-  }
-});
+textColorInput.addEventListener('input', renderText);
 
 // Download button: export as PNG
 document.getElementById('downloadPNG').addEventListener('click', function() {
@@ -150,4 +147,11 @@ document.getElementById('downloadSVG').addEventListener('click', function() {
 // When window is resized, re-render to keep content centered
 paper.view.onResize = function() {
   renderText();
+};
+
+window.onload = function() {
+    paper.setup('myCanvas');
+
+    // Initial background color
+    paper.view.element.style.backgroundColor = document.getElementById('bgColor').value;
 }; 
