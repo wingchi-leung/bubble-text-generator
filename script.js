@@ -154,4 +154,29 @@ window.onload = function() {
 
     // Initial background color
     paper.view.element.style.backgroundColor = document.getElementById('bgColor').value;
+
+    // 添加颜色预设功能
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bgColor = this.dataset.bg;
+            const textColor = this.dataset.text;
+            
+            // 更新颜色选择器的值
+            document.getElementById('bgColor').value = bgColor;
+            document.getElementById('textColor').value = textColor;
+            
+            // 应用颜色
+            paper.view.element.style.backgroundColor = bgColor;
+            if (text) {
+                text.children.forEach(child => {
+                    child.fillColor = textColor;
+                });
+            }
+            
+            // 重新渲染文本
+            renderText();
+        });
+    });
+
+    // ... existing event listeners ...
 }; 
