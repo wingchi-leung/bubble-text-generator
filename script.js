@@ -119,17 +119,18 @@ function initializeApp() {
         }
     });
 
-    // 修改renderText函数以保持背景图片
-    const originalRenderText = renderText;
-    renderText = function() {
-        // 保存背景图片引用
-        const tempBg = backgroundImage;
-        // 执行原始渲染
+    // SVG代码显示功能
+    const svgCodeContainer = document.querySelector('.svg-code-container');
+    const svgCodeDisplay = document.getElementById('svgCodeDisplay');
+    const showSVGCodeBtn = document.getElementById('showSVGCode');
+    const copySVGCodeBtn = document.getElementById('copySVGCode');
+
+    // 修改renderText函数以保持背景图片和更新SVG代码
+    const originalRenderText = window.renderText;  // 保存到window对象
+    window.renderText = function() {
         originalRenderText();
-        // 如果有背景图片，确保它在最底层
-        if (tempBg) {
-            backgroundImage = tempBg;
-            backgroundImage.sendToBack();
+        if (svgCodeContainer.style.display !== 'none') {
+            updateSVGCode();
         }
     };
 
@@ -142,7 +143,7 @@ function initializeApp() {
         tempCanvas.width = width;
         tempCanvas.height = height;
         const tempCtx = tempCanvas.getContext('2d');
-
+        console.log("downloading png...")
         // 1. 绘制背景色
         tempCtx.fillStyle = paper.view.element.style.backgroundColor;
         tempCtx.fillRect(0, 0, width, height);
@@ -173,6 +174,7 @@ function initializeApp() {
         tempCanvas.width = width;
         tempCanvas.height = height;
         const tempCtx = tempCanvas.getContext('2d');
+        console.log("downloading jpg...")
 
         // 1. 绘制背景色
         tempCtx.fillStyle = paper.view.element.style.backgroundColor;
@@ -241,6 +243,61 @@ function initializeApp() {
         link.click();
         document.body.removeChild(link);
     }
+
+    // 更新SVG代码显示
+    function updateSVGCode() {
+        // 创建临时背景
+        const background = new paper.Path.Rectangle({
+            rectangle: paper.view.bounds,
+            fillColor: paper.view.element.style.backgroundColor
+        });
+        background.sendToBack();
+
+        // 导出SVG
+        const svg = paper.project.exportSVG({
+            asString: true,
+            bounds: paper.view.bounds,
+            matrix: new paper.Matrix().translate(0, 0)
+        });
+
+        // 移除临时背景
+        background.remove();
+
+        // 美化SVG代码
+        const beautifiedSVG = svg
+            .replace(/></g, '>\n<')
+            .replace(/\/>/g, '/>\n')
+            .split('\n')
+            .map(line => '  ' + line)
+            .join('\n');
+
+        // 显示代码
+        svgCodeDisplay.textContent = beautifiedSVG;
+    }
+
+    // 显示/隐藏SVG代码
+    showSVGCodeBtn.addEventListener('click', function() {
+        const isHidden = svgCodeContainer.style.display === 'none';
+        svgCodeContainer.style.display = isHidden ? 'block' : 'none';
+        showSVGCodeBtn.textContent = isHidden ? 'Hide SVG Code' : 'Show SVG Code';
+        if (isHidden) {
+            updateSVGCode();
+        }
+    });
+
+    // 复制SVG代码
+    copySVGCodeBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(svgCodeDisplay.textContent).then(() => {
+            const copyText = copySVGCodeBtn.querySelector('.copy-text');
+            copyText.textContent = 'Copied!';
+            copySVGCodeBtn.classList.add('copied');
+            
+            setTimeout(() => {
+                copyText.textContent = 'Copy';
+                copySVGCodeBtn.classList.remove('copied');
+            }, 2000);
+        });
+    });
 }
 
 function renderText() {
@@ -311,43 +368,7 @@ function renderText() {
 
     paper.view.draw();
 }
-
-// Download button: export as PNG
-// document.getElementById('downloadPNG').addEventListener('click', function() {
-//   const dataURL = canvasEl.toDataURL("image/png");
-//   const link = document.createElement('a');
-//   link.href = dataURL;
-//   link.download = "bubble_text.png";
-//   document.body.appendChild(link);
-//   link.click();
-//   document.body.removeChild(link);
-// });
-
-// Download button: export as JPG
-// document.getElementById('downloadJPG').addEventListener('click', function() {
-//   const dataURL = canvasEl.toDataURL("image/jpeg");
-//   const link = document.createElement('a');
-//   link.href = dataURL;
-//   link.download = "bubble_text.jpg";
-//   document.body.appendChild(link);
-//   link.click();
-//   document.body.removeChild(link);
-// });
-
-// Download button: export as SVG
-// document.getElementById('downloadSVG').addEventListener('click', function() {
-//   const svgContent = paper.project.exportSVG({ asString: true });
-//   const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-//   const url  = URL.createObjectURL(blob);
-//   const link = document.createElement('a');
-//   link.href = url;
-//   link.download = "bubble_text.svg";
-//   document.body.appendChild(link);
-//   link.click();
-//   document.body.removeChild(link);
-//   URL.revokeObjectURL(url);
-// });
-
+ 
 // When window is resized, re-render to keep content centered
 paper.view.onResize = function() {
   renderText();

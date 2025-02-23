@@ -138,7 +138,7 @@ input[type="range"] {
   background: #6495ED;
   color: #fff;
   border: none;
-  padding: 10px 15px;
+  padding: 10px 10px;
   border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
@@ -436,4 +436,73 @@ footer.footer p {
 
 .remove-btn:hover {
     background: #fff5f5;
+}
+
+/* SVG代码显示区域样式 */
+.svg-code-container {
+    margin-top: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.copy-btn {
+    padding: 0.25rem 0.75rem;
+    background: white;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: #f8f9fa;
+}
+
+.copy-btn.copied {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+#svgCodeDisplay {
+    padding: 1rem;
+    margin: 0;
+    max-height: 200px;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* 美化滚动条 */
+#svgCodeDisplay::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#svgCodeDisplay::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#svgCodeDisplay::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#svgCodeDisplay::-webkit-scrollbar-thumb:hover {
+    background: #555;
 } 

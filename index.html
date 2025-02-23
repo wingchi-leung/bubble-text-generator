@@ -108,12 +108,24 @@
                 <button id="downloadPNG">PNG</button>
                 <button id="downloadJPG">JPG</button>
                 <button id="downloadSVG">SVG</button>
+                <button id="showSVGCode">SVG Code</button>
               </div>
             </div>
           </div>
           <div class="canvas-container">
             <canvas id="myCanvas" resize></canvas>
           </div>
+        </div>
+        
+        <!-- 添加SVG代码显示区域 -->
+        <div class="svg-code-container" style="display: none;">
+            <div class="code-header">
+                <span>SVG Code</span>
+                <button id="copySVGCode" class="copy-btn">
+                    <span class="copy-text">Copy</span>
+                </button>
+            </div>
+            <pre><code id="svgCodeDisplay"></code></pre>
         </div>
       </div>
     </div>
